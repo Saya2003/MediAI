@@ -170,7 +170,7 @@ export const completeTask = createServerFn({ method: "POST" })
       await supabase
         .from("cases")
         .update({
-          stage: nextStage,
+          stage: nextStage as any,
           closed_at: nextStage === "closed" ? new Date().toISOString() : null,
         })
         .eq("id", caseRow.id);
