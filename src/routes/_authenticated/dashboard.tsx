@@ -50,7 +50,7 @@ function DashboardContent() {
           <div className="mt-6 space-y-3">
             {Object.entries(STAGE_LABEL).filter(([k]) => k !== "cancelled").map(([key, label]) => {
               const n = data.byStage[key] ?? 0;
-              const max = Math.max(1, ...Object.values(data.byStage));
+              const max = Math.max(1, ...Object.values(data.byStage).map((v) => v as number));
               const pct = (n / max) * 100;
               return (
                 <div key={key} className="flex items-center gap-4">
