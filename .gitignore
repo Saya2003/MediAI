@@ -40,3 +40,6 @@ dist-ssr
 # Bun lockfile (using npm)
 bun.lock
 bunfig.toml
+
+# Supabase temp files
+supabase/.temp/
