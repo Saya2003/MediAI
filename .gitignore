@@ -43,3 +43,6 @@ bunfig.toml
 
 # Supabase temp files
 supabase/.temp/
+
+# Netlify build output
+.netlify/
