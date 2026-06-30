@@ -46,3 +46,6 @@ supabase/.temp/
 
 # Netlify build output
 .netlify/
+
+# Vercel build output
+.vercel/
