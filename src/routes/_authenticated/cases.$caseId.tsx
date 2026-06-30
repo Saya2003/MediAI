@@ -509,9 +509,12 @@ function AdvanceButton({ caseId, stage }: { caseId: string; stage: string }) {
 // ── Document Upload Component (FR-005 / FR-043) ──────────────────────────────
 function DocumentUpload({ caseId }: { caseId: string }) {
   const uploadFn = useServerFn(uploadCaseDocument);
+  const extractFn = useServerFn(aiExtractDocumentFields);
   const qc = useQueryClient();
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const IMAGE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"];
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -531,6 +534,16 @@ function DocumentUpload({ caseId }: { caseId: string }) {
         },
       });
       toast.success("Document uploaded.");
+
+      if (!IMAGE_TYPES.includes(file.type)) {
+        const res = await extractFn({ data: { caseId, textContent: b64.slice(0, 10000), fileType: file.type } });
+        if (res.extracted) {
+          toast.success("AI extracted fields from document.");
+        } else if (res.note) {
+          toast.info(res.note);
+        }
+      }
+
       await qc.invalidateQueries({ queryKey: ["case", caseId] });
     } catch (e: any) { toast.error(e.message); }
     finally { setBusy(false); if (fileRef.current) fileRef.current.value = ""; }

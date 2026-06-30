@@ -36,6 +36,7 @@ const uploadDocumentSchema = z.object({
 const aiExtractSchema = z.object({
   caseId: z.string().uuid(),
   textContent: z.string().min(1).max(50000),
+  fileType: z.string().optional(),
 });
 
 const specialistSchema = z.object({

@@ -743,20 +743,26 @@ export const aiExtractDocumentFields = createServerFn({ method: "POST" })
     z.object({
       caseId: z.string().uuid(),
       textContent: z.string().min(1).max(50000),
+      fileType: z.string().optional(),
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    if (!process.env.OPENROUTER_API_KEY) return { extracted: null };
+    if (!process.env.OPENROUTER_API_KEY) return { extracted: null, note: "AI not configured" };
+
+    if (data.fileType && ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"].includes(data.fileType)) {
+      return { extracted: null, note: "AI extraction requires text-based documents (PDF, TXT). The current AI model does not support image processing." };
+    }
 
     const { data: c } = await supabase.from("cases").select("patient_name,mrn,specialty").eq("id", data.caseId).maybeSingle();
     if (!c) throw new Error("Case not found");
 
-    const response = await ai.chat.completions.create({
-      model: AI_MODEL,
-      messages: [{
-        role: "user",
-        content: `Extract structured information from this referral document text for patient ${c.patient_name} (MRN: ${c.mrn}).
+    try {
+      const response = await ai.chat.completions.create({
+        model: AI_MODEL,
+        messages: [{
+          role: "user",
+          content: `Extract structured information from this referral document text for patient ${c.patient_name} (MRN: ${c.mrn}).
 
 Document text:
 ${data.textContent.slice(0, 10000)}
@@ -767,21 +773,28 @@ Return JSON with:
 - specialty (suggested specialty if different from current "${c.specialty}")
 - key_findings (array of up to 3 bullet points)
 - urgency (one of: "routine", "urgent", "stat")`,
-      }],
-      response_format: { type: "json_object" },
-    });
+        }],
+        response_format: { type: "json_object" },
+      });
 
-    const extracted = JSON.parse(response.choices?.[0]?.message?.content || "{}");
+      const extracted = JSON.parse(response.choices?.[0]?.message?.content || "{}");
 
-    await supabase.from("case_events").insert({
-      case_id: data.caseId,
-      actor_type: "ai_agent",
-      actor_label: "AI Document Extraction Agent",
-      event_type: "document_fields_extracted",
-      details: extracted,
-    });
+      await supabase.from("case_events").insert({
+        case_id: data.caseId,
+        actor_type: "ai_agent",
+        actor_label: "AI Document Extraction Agent",
+        event_type: "document_fields_extracted",
+        details: extracted,
+      });
 
-    return { extracted };
+      return { extracted };
+    } catch (err: any) {
+      const msg = err?.message || String(err);
+      if (msg.includes("does not support image") || msg.includes("image input") || msg.includes("Cannot read")) {
+        return { extracted: null, note: "AI extraction requires text-based documents. Upload a text document (PDF, TXT) to use this feature." };
+      }
+      throw err;
+    }
   });
 
 // ── SLA Breach Detection & Escalation (FR-028) ───────────────────────────────
