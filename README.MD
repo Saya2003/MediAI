@@ -155,9 +155,9 @@ npm run dev
 
 | Role | Email | Password |
 |------|-------|----------|
-| Physician | `physician@mediflow.demo` | `demo123456` |
-| Specialist | `specialist@mediflow.demo` | `demo123456` |
-| Supervisor | `supervisor@mediflow.demo` | `demo123456` |
+| Physician | `physician@mediflow.demo` | `12345678` |
+| Specialist | `specialist@mediflow.demo` | `12345678` |
+| Supervisor | `supervisor@mediflow.demo` | `12345678` |
 
 ### End-to-End Walkthrough
 
