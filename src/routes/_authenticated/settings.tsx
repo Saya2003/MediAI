@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { User, Bell, LogOut, Shield } from "lucide-react";
 
@@ -24,6 +24,23 @@ function SettingsPage() {
   const [emailMe, setEmailMe] = useState(true);
   const [pushMe, setPushMe] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [roleLabel, setRoleLabel] = useState<string>("Loading…");
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        const roles = (data ?? []).map((r) => r.role);
+        if (roles.includes("supervisor")) setRoleLabel("Supervisor");
+        else if (roles.includes("physician")) setRoleLabel("Physician");
+        else if (roles.includes("specialist")) setRoleLabel("Specialist");
+        else if (roles.includes("coordinator")) setRoleLabel("Care coordinator");
+        else setRoleLabel("No roles assigned");
+      });
+  }, [user]);
 
   async function saveProfile() {
     setSaving(true);
@@ -57,7 +74,7 @@ function SettingsPage() {
             <Input value={user?.email ?? ""} disabled />
           </Field>
           <Field label="Role">
-            <Input value="Care coordinator" disabled />
+            <Input value={roleLabel} disabled />
           </Field>
         </div>
         <div className="mt-4 flex justify-end">

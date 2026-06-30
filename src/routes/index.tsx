@@ -12,6 +12,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { getPublicStats } from "@/lib/mediflow.functions";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -32,6 +39,26 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate({ to: "/dashboard" });
+    }
+  }, [user, loading, navigate]);
+
+  const getStatsFn = useServerFn(getPublicStats);
+  const { data: stats } = useQuery({
+    queryKey: ["public-stats"],
+    queryFn: () => getStatsFn(),
+    refetchInterval: 60_000,
+  });
+
+  const activeCases = stats?.activeCases ?? 0;
+  const openTasks = stats?.openTasks ?? 0;
+  const slaBreaches = stats?.slaBreaches ?? 0;
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       {/* soft ambient color */}
@@ -86,9 +113,9 @@ function Landing() {
             <div className="surface-card overflow-hidden p-2 shadow-xl">
               <div className="rounded-lg bg-gradient-to-b from-muted/40 to-background p-6">
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <MiniStat label="Open cases" value="24" tone="primary" />
-                  <MiniStat label="Things to do" value="7" tone="info" />
-                  <MiniStat label="Past due" value="1" tone="warning" />
+                  <MiniStat label="Active cases" value={String(activeCases)} tone="primary" />
+                  <MiniStat label="Things to do" value={String(openTasks)} tone="info" />
+                  <MiniStat label="Past due" value={String(slaBreaches)} tone="warning" />
                 </div>
                 <div className="mt-4 grid grid-cols-6 gap-1.5 text-left">
                   {["New request", "Insurance", "Booking", "Visit", "Check-in", "Done"].map((s, i) => (
