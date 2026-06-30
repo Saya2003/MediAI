@@ -947,16 +947,34 @@ export const seedDemoData = createServerFn({ method: "POST" })
       );
     }
 
-    // ── Seed specialists ──────────────────────────────────────────────────
-    const specialists = [
-      { name: "Dr. Robert Vance", specialty: "Cardiology (Heart)",             lat: 37.7749, lng: -122.4194, networks: ["Atlas Health","Cigna Premium","UnitedHealthcare"] },
-      { name: "Dr. Sarah Lin",    specialty: "Neurology (Brain & Nerves)",     lat: 37.7833, lng: -122.4167, networks: ["Atlas Health","Cigna Premium"] },
-      { name: "Dr. James Carter", specialty: "Orthopedics (Bones & Joints)",   lat: 37.7699, lng: -122.4468, networks: ["Atlas Health","UnitedHealthcare"] },
-      { name: "Dr. Emily Watson", specialty: "Oncology (Cancer)",              lat: 37.7599, lng: -122.4368, networks: ["Atlas Health","Cigna Premium","UnitedHealthcare"] },
-      { name: "Dr. Priya Sharma", specialty: "Dermatology (Skin)",             lat: 37.7800, lng: -122.4100, networks: ["Cigna Premium"] },
-      { name: "Dr. Marcus Bell",  specialty: "Endocrinology (Hormones)",       lat: 37.7650, lng: -122.4250, networks: ["Atlas Health","UnitedHealthcare"] },
+    // ── Seed specialists (3 per specialty × 6 specialties) ────────────────
+    const SPECIALIST_POOL = [
+      // Cardiology (Heart)
+      { name: "Dr. Robert Vance",  specialty: "Cardiology (Heart)",          lat: 37.7749, lng: -122.4194, networks: ["Atlas Health","Cigna Premium","UnitedHealthcare"] },
+      { name: "Dr. Anita Rao",     specialty: "Cardiology (Heart)",          lat: 37.7781, lng: -122.4223, networks: ["Atlas Health","Cigna Premium"] },
+      { name: "Dr. Michael Tran",  specialty: "Cardiology (Heart)",          lat: 37.7712, lng: -122.4176, networks: ["UnitedHealthcare"] },
+      // Neurology (Brain & Nerves)
+      { name: "Dr. Sarah Lin",     specialty: "Neurology (Brain & Nerves)",  lat: 37.7833, lng: -122.4167, networks: ["Atlas Health","Cigna Premium"] },
+      { name: "Dr. David Okafor",  specialty: "Neurology (Brain & Nerves)",  lat: 37.7805, lng: -122.4140, networks: ["Atlas Health","UnitedHealthcare"] },
+      { name: "Dr. Lisa Park",     specialty: "Neurology (Brain & Nerves)",  lat: 37.7850, lng: -122.4182, networks: ["Cigna Premium","UnitedHealthcare"] },
+      // Orthopedics (Bones & Joints)
+      { name: "Dr. James Carter",  specialty: "Orthopedics (Bones & Joints)",lat: 37.7699, lng: -122.4468, networks: ["Atlas Health","UnitedHealthcare"] },
+      { name: "Dr. Rachel Kim",    specialty: "Orthopedics (Bones & Joints)",lat: 37.7672, lng: -122.4491, networks: ["Atlas Health","Cigna Premium"] },
+      { name: "Dr. Carlos Mendez", specialty: "Orthopedics (Bones & Joints)",lat: 37.7725, lng: -122.4443, networks: ["Cigna Premium","UnitedHealthcare"] },
+      // Oncology (Cancer)
+      { name: "Dr. Emily Watson",  specialty: "Oncology (Cancer)",           lat: 37.7599, lng: -122.4368, networks: ["Atlas Health","Cigna Premium","UnitedHealthcare"] },
+      { name: "Dr. Frank Okonkwo", specialty: "Oncology (Cancer)",           lat: 37.7575, lng: -122.4392, networks: ["Atlas Health","Cigna Premium"] },
+      { name: "Dr. Grace Liu",     specialty: "Oncology (Cancer)",           lat: 37.7620, lng: -122.4345, networks: ["UnitedHealthcare"] },
+      // Dermatology (Skin)
+      { name: "Dr. Priya Sharma",  specialty: "Dermatology (Skin)",          lat: 37.7800, lng: -122.4100, networks: ["Cigna Premium"] },
+      { name: "Dr. Kevin Brown",   specialty: "Dermatology (Skin)",          lat: 37.7778, lng: -122.4134, networks: ["Atlas Health","UnitedHealthcare"] },
+      { name: "Dr. Nina Patel",    specialty: "Dermatology (Skin)",          lat: 37.7822, lng: -122.4088, networks: ["Atlas Health","Cigna Premium"] },
+      // Endocrinology (Hormones)
+      { name: "Dr. Marcus Bell",   specialty: "Endocrinology (Hormones)",    lat: 37.7650, lng: -122.4250, networks: ["Atlas Health","UnitedHealthcare"] },
+      { name: "Dr. Olivia Reed",   specialty: "Endocrinology (Hormones)",    lat: 37.7628, lng: -122.4277, networks: ["Atlas Health","Cigna Premium"] },
+      { name: "Dr. Samir Hassan",  specialty: "Endocrinology (Hormones)",    lat: 37.7675, lng: -122.4225, networks: ["Cigna Premium","UnitedHealthcare"] },
     ];
-    for (const s of specialists) {
+    for (const s of SPECIALIST_POOL) {
       const { data: existing } = await supabase.from("specialists").select("id").eq("full_name", s.name).maybeSingle();
       if (!existing) {
         await supabase.from("specialists").insert({

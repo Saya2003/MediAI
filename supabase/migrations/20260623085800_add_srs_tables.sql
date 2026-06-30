@@ -529,14 +529,32 @@ INSERT INTO public.insurance_policies (id, insurer_name, group_id, coverage_tier
   ('e2a4a7b0-2b10-4ea5-8025-a1d2d3e4f5a3', 'UnitedHealthcare',  'GP-UHC-77',   'Silver',   ARRAY['Cardiology (Heart)','Orthopedics (Bones & Joints)','Endocrinology (Hormones)'])
 ON CONFLICT (id) DO NOTHING;
 
--- Specialists
+-- Specialists (3 per specialty × 6 specialties = 18)
 INSERT INTO public.specialists (id, full_name, specialty, location_lat, location_lng, insurance_networks, calendar_api_token_ref) VALUES
+  -- Cardiology (Heart)
   ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b1', 'Dr. Robert Vance',  'Cardiology (Heart)',             37.7749, -122.4194, ARRAY['Atlas Health','Cigna Premium','UnitedHealthcare'], 'token_vance'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b7', 'Dr. Anita Rao',     'Cardiology (Heart)',             37.7781, -122.4223, ARRAY['Atlas Health','Cigna Premium'],                   'token_rao'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b8', 'Dr. Michael Tran',  'Cardiology (Heart)',             37.7712, -122.4176, ARRAY['UnitedHealthcare'],                               'token_tran'),
+  -- Neurology (Brain & Nerves)
   ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b2', 'Dr. Sarah Lin',     'Neurology (Brain & Nerves)',     37.7833, -122.4167, ARRAY['Atlas Health','Cigna Premium'],                   'token_lin'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b9', 'Dr. David Okafor',  'Neurology (Brain & Nerves)',     37.7805, -122.4140, ARRAY['Atlas Health','UnitedHealthcare'],                 'token_okafor'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6ba', 'Dr. Lisa Park',     'Neurology (Brain & Nerves)',     37.7850, -122.4182, ARRAY['Cigna Premium','UnitedHealthcare'],               'token_park'),
+  -- Orthopedics (Bones & Joints)
   ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b3', 'Dr. James Carter',  'Orthopedics (Bones & Joints)',   37.7699, -122.4468, ARRAY['Atlas Health','UnitedHealthcare'],                 'token_carter'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6bb', 'Dr. Rachel Kim',    'Orthopedics (Bones & Joints)',   37.7672, -122.4491, ARRAY['Atlas Health','Cigna Premium'],                   'token_kim'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6bc', 'Dr. Carlos Mendez', 'Orthopedics (Bones & Joints)',   37.7725, -122.4443, ARRAY['Cigna Premium','UnitedHealthcare'],               'token_mendez'),
+  -- Oncology (Cancer)
   ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b4', 'Dr. Emily Watson',  'Oncology (Cancer)',               37.7599, -122.4368, ARRAY['Atlas Health','Cigna Premium','UnitedHealthcare'], 'token_watson'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6bd', 'Dr. Frank Okonkwo', 'Oncology (Cancer)',               37.7575, -122.4392, ARRAY['Atlas Health','Cigna Premium'],                   'token_okonkwo'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6be', 'Dr. Grace Liu',     'Oncology (Cancer)',               37.7620, -122.4345, ARRAY['UnitedHealthcare'],                               'token_liu'),
+  -- Dermatology (Skin)
   ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b5', 'Dr. Priya Sharma',  'Dermatology (Skin)',              37.7800, -122.4100, ARRAY['Cigna Premium'],                                  'token_sharma'),
-  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b6', 'Dr. Marcus Bell',   'Endocrinology (Hormones)',        37.7650, -122.4250, ARRAY['Atlas Health','UnitedHealthcare'],                 'token_bell')
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6bf', 'Dr. Kevin Brown',   'Dermatology (Skin)',              37.7778, -122.4134, ARRAY['Atlas Health','UnitedHealthcare'],                 'token_brown'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6c0', 'Dr. Nina Patel',    'Dermatology (Skin)',              37.7822, -122.4088, ARRAY['Atlas Health','Cigna Premium'],                   'token_patel'),
+  -- Endocrinology (Hormones)
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6b6', 'Dr. Marcus Bell',   'Endocrinology (Hormones)',        37.7650, -122.4250, ARRAY['Atlas Health','UnitedHealthcare'],                 'token_bell'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6c1', 'Dr. Olivia Reed',   'Endocrinology (Hormones)',        37.7628, -122.4277, ARRAY['Atlas Health','Cigna Premium'],                   'token_reed'),
+  ('f3b5b8c0-3c20-5fa6-9136-b2d3d4e5f6c2', 'Dr. Samir Hassan',  'Endocrinology (Hormones)',        37.7675, -122.4225, ARRAY['Cigna Premium','UnitedHealthcare'],               'token_hassan')
 ON CONFLICT (id) DO NOTHING;
 
 -- System Configuration

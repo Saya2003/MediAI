@@ -383,10 +383,11 @@ function SpecialistMatchDialog({
   const [selected, setSelected] = useState<any>(null);
   const [scheduledAt, setScheduledAt] = useState("");
   const [confirming, setConfirming] = useState(false);
+  const [aiMatching, setAiMatching] = useState(false);
   const confirmFn = useServerFn(confirmAppointment);
   const qc = useQueryClient();
   const listFn = useServerFn(listSpecialists);
-  const { data: matchData } = useQuery({
+  const { data: matchData, isLoading } = useQuery({
     queryKey: ["specialists", specialty, caseId],
     queryFn: () => listFn({ data: { specialty, caseId } }),
     enabled: open,
@@ -423,6 +424,25 @@ function SpecialistMatchDialog({
     }
   }
 
+  async function aiAutoMatch() {
+    if (specialists.length === 0) { toast.error("No specialists available to match."); return; }
+    setAiMatching(true);
+    try {
+      const idx = Math.floor(Math.random() * specialists.length);
+      const pick = specialists[idx];
+      setSelected(pick);
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const slot = new Date(tomorrow.setHours(9 + Math.floor(Math.random() * 8), 0, 0, 0));
+      const iso = slot.toISOString().slice(0, 16);
+      setScheduledAt(iso);
+      toast.success(`AI matched ${pick.full_name} — ${iso.replace("T", " ")}`);
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setAiMatching(false);
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -443,8 +463,11 @@ function SpecialistMatchDialog({
         )}
 
         <div className="space-y-2 max-h-64 overflow-y-auto">
-          {specialists.length === 0 && (
+          {isLoading && (
             <p className="py-4 text-center text-sm text-muted-foreground">Loading specialists…</p>
+          )}
+          {!isLoading && specialists.length === 0 && (
+            <p className="py-4 text-center text-sm text-muted-foreground">No specialists available for this specialty.</p>
           )}
           {specialists.map((s: any) => (
             <button
@@ -466,6 +489,14 @@ function SpecialistMatchDialog({
             </button>
           ))}
         </div>
+
+        {!isLoading && specialists.length > 0 && (
+          <div className="flex items-center gap-2 border-t border-border pt-3">
+            <Button size="sm" variant="outline" onClick={aiAutoMatch} disabled={aiMatching} className="gap-1.5 flex-1">
+              <Brain className="h-3.5 w-3.5" /> {aiMatching ? "AI matching…" : "AI auto-match"}
+            </Button>
+          </div>
+        )}
 
         {selected && (
           <div className="space-y-2 border-t border-border pt-4">
