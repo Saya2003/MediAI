@@ -199,19 +199,21 @@ npm run dev
 | **Technical Execution** | TypeScript, strict RLS policies, comprehensive audit logging, proper error handling |
 | **Completeness** | Working prototype with seed data, demo workflow, this README, demo video |
 | **Creativity & Innovation** | AI-powered document extraction, RPA simulation, SLA breach detection |
-| **Coding Agents Bonus** | Developed with the assistance of AI coding agents during implementation |
+| **Coded Agents Bonus** | The solution implements **3 coded AI agents** as TypeScript server functions using the OpenAI SDK + OpenRouter/DeepSeek V4 Flash: (1) Triage Agent — analyzes referrals and recommends priority/specialty/ICD-10, (2) Document Extraction Agent — extracts structured fields from uploaded PDFs, (3) Summarization Agent — generates clinical summaries at case milestones. All three are coded agents (not low-code), clearly separated in `src/lib/mediflow.functions.ts`. |
 
-## Coding Agents Disclosure
+## Coded Agents Detail
 
-This project was developed with the assistance of AI coding agents, including Claude Code / OpenCode. The AI agents contributed to:
+This solution uses **Coded Agents** — AI agents written in TypeScript as TanStack Start server functions, powered by OpenRouter (DeepSeek V4 Flash). These are distinct from the UiPath low-code agents (Maestro Case, Action Center, Orchestrator) and demonstrate autonomous AI reasoning within the application's business logic.
 
-- Implementation of server functions (referral creation, task orchestration, SLA detection)
-- AI integration with OpenRouter (DeepSeek V4 Flash)
-- UI components (document upload, admin panel, case detail)
-- Database schema design and migration scripts
-- Seed data generation and testing workflows
+| Agent | Server Function | Trigger | Output |
+|-------|----------------|---------|--------|
+| **Triage Agent** | `createReferral` | New referral submission | Priority (routine/urgent/stat), suggested ICD-10 code, recommended specialty |
+| **Document Extraction Agent** | `aiExtractDocumentFields` | Non-image document upload | Diagnosis code, key findings, urgency, suggested specialty |
+| **Summarization Agent** | `completeTask` (follow_up stage) | Case reaches follow-up stage | 3-sentence clinical summary stored in `case_summaries` table |
 
-Evidence of AI agent usage is available in the repository's development history.
+All agents use `response_format: { type: "json_object" }` for structured output, have graceful degradation when `OPENROUTER_API_KEY` is not set, and log all actions to the append-only `case_events` audit trail with `actor_type: "ai_agent"`.
+
+Source: `src/lib/mediflow.functions.ts`
 
 ## Demo Video
 
