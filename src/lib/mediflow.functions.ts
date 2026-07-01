@@ -750,7 +750,7 @@ export const aiExtractDocumentFields = createServerFn({ method: "POST" })
     const { supabase } = context;
     if (!process.env.OPENROUTER_API_KEY) return { extracted: null, note: "AI not configured" };
 
-    if (data.fileType && ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"].includes(data.fileType)) {
+    if (data.fileType?.startsWith("image/")) {
       return { extracted: null, note: "AI extraction requires text-based documents (PDF, TXT). The current AI model does not support image processing." };
     }
 

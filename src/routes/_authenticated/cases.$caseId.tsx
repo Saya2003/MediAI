@@ -545,7 +545,7 @@ function DocumentUpload({ caseId }: { caseId: string }) {
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const IMAGE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"];
+  function isImage(mime: string) { return mime.startsWith("image/"); }
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -566,7 +566,7 @@ function DocumentUpload({ caseId }: { caseId: string }) {
       });
       toast.success("Document uploaded.");
 
-      if (!IMAGE_TYPES.includes(file.type)) {
+      if (!isImage(file.type)) {
         const res = await extractFn({ data: { caseId, textContent: b64.slice(0, 10000), fileType: file.type } });
         if (res.extracted) {
           toast.success("AI extracted fields from document.");
